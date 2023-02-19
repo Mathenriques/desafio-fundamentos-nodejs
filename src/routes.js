@@ -43,9 +43,24 @@ export const routes = [
     },
     {
         method: 'PUT',
-        path: '',
+        path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
-            return res.end()
+            const { id } = req.params
+            const { title, description } = req.body
+            const dateTime = new Date().toLocaleString()
+            const { created_at, completed_at } = database.select('tasks', {
+                id: id
+            })
+
+            database.update('tasks', id, {
+                title,
+                description,
+                completed_at: completed_at,
+                created_at: created_at,
+                updated_at: dateTime
+            })
+            
+            return res.writeHead(204).end()
         }
     },
     {
