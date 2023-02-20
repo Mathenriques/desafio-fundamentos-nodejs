@@ -46,17 +46,13 @@ export const routes = [
         path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
             const { id } = req.params
-            const { title, description } = req.body
+            const { title, description, completed_at } = req.body
             const dateTime = new Date().toLocaleString()
-            const { created_at, completed_at } = database.select('tasks', {
-                id: id
-            })
 
             database.update('tasks', id, {
                 title,
                 description,
-                completed_at: completed_at,
-                created_at: created_at,
+                completed_at,
                 updated_at: dateTime
             })
             
@@ -65,9 +61,30 @@ export const routes = [
     },
     {
         method: 'DELETE',
-        path: '',
+        path: buildRoutePath('/tasks/:id'),
         handler: (req, res) => {
-            return res.end()
+            const { id } = req.params
+            
+            database.delete('tasks', id)
+            
+            return res.writeHead(204).end()
         }
     },
+    {
+        method: 'PATCH',
+        path: buildRoutePath('/tasks/:id/complete'),
+        handler: (req, res) => {
+            const { id } = req.params
+            const { completed_at } = req.body
+            const dateTime = new Date().toLocaleString()
+
+            var completedOrNot = false ? null : dateTime
+
+            database.patch('tasks', id, {
+                completed_at: completedOrNot,
+            })
+            
+            return res.writeHead(204).end()
+        }
+    }
 ]
